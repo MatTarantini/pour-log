@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pour Log — oils &amp; candle blends</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF0EC; --panel:#FFFFFF; --ink:#23262B; --muted:#646A70; --line:#D5D9D3;
+  --amber:#9A5A00; --amber-soft:#FBEBD2; --wick:#23262B;
+  --warn:#A3261B; --warn-soft:#FBE3E0; --ok:#2F6B45; --ok-soft:#E0F0E5;
+  --focus:#1F5FBF;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#17191C; --panel:#212429; --ink:#ECEDEA; --muted:#A2A8AE; --line:#343840;
+    --amber:#F0A63A; --amber-soft:#3A2A12; --wick:#ECEDEA;
+    --warn:#FF8A7D; --warn-soft:#3C1E1B; --ok:#7FD39B; --ok-soft:#1B3325; --focus:#7FB0FF;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#17191C; --panel:#212429; --ink:#ECEDEA; --muted:#A2A8AE; --line:#343840;
+  --amber:#F0A63A; --amber-soft:#3A2A12; --wick:#ECEDEA;
+  --warn:#FF8A7D; --warn-soft:#3C1E1B; --ok:#7FD39B; --ok-soft:#1B3325; --focus:#7FB0FF;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;line-height:1.15;margin:0}
+.wrap{max-width:760px;margin:0 auto;padding:16px 16px 96px}
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:12px 0 18px}
+header.top h1{font-size:2rem;font-weight:700;letter-spacing:-.01em}
+header.top p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+.store{font-size:.8rem;color:var(--muted);text-align:right}
+.store b{color:var(--ink)}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:6px;background:var(--bg);padding:8px 0 12px}
+nav.tabs button{flex:1;font:inherit;font-weight:700;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--wick);color:var(--bg);border-color:var(--wick)}
+.bar{display:flex;gap:8px;margin-bottom:12px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-width:0}
+textarea{min-height:64px;resize:vertical}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:9px 14px;font-weight:700;white-space:nowrap}
+.btn.primary{background:var(--amber);border-color:var(--amber);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#1b1206}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#1b1206}}
+.btn.danger{color:var(--warn)}
+.btn.small{padding:6px 10px;font-size:.88rem}
+.list{display:flex;flex-direction:column;gap:8px}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:center}
+.row .main{flex:1;min-width:0}
+.row h3{font-size:1.05rem;font-weight:700}
+.row .sub{color:var(--muted);font-size:.88rem}
+.qty{font-weight:700;text-align:right;white-space:nowrap}
+.qty small{display:block;font-weight:400;color:var(--muted);font-size:.78rem}
+.low{color:var(--warn)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{background:var(--amber-soft);color:var(--ink);border-radius:999px;padding:2px 10px;font-size:.84rem}
+.empty{border:2px dashed var(--line);border-radius:12px;padding:28px 18px;text-align:center;color:var(--muted)}
+.empty .btn{margin-top:10px}
+dialog{border:none;border-radius:14px;padding:0;width:min(640px,calc(100% - 20px));max-height:calc(100% - 20px);background:var(--panel);color:var(--ink)}
+dialog::backdrop{background:rgba(10,12,14,.55)}
+.sheet{padding:18px}
+.sheet h2{font-size:1.4rem;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid .full{grid-column:1/-1}
+label{display:flex;flex-direction:column;gap:4px;font-size:.88rem;color:var(--muted)}
+label > span{color:var(--ink);font-weight:700}
+.amt{display:flex;gap:6px}
+.amt input{flex:1}
+.amt select{width:78px;flex:none}
+.unitrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.unitrow > span{font-weight:700;font-size:.88rem}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:none;background:var(--panel);color:var(--muted);padding:5px 12px;font-weight:700}
+.seg button[aria-checked="true"]{background:var(--wick);color:var(--bg)}
+.more{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+.more summary{cursor:pointer;font-weight:700;color:var(--muted)}
+.newtag{font-size:.78rem;color:var(--amber);grid-column:1/-1;margin-top:-2px}
+.oilline{display:grid;grid-template-columns:1fr 84px 36px;gap:6px;align-items:center;margin-bottom:6px}
+.oilline button{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;height:40px}
+.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap}
+.check{border-radius:12px;padding:12px 14px;margin:12px 0;border:2px solid transparent}
+.check.dup{background:var(--warn-soft);border-color:var(--warn)}
+.check.near{background:var(--amber-soft);border-color:var(--amber)}
+.check.ok{background:var(--ok-soft);border-color:var(--ok)}
+.check strong{display:block;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.1rem}
+.check ul{margin:6px 0 0;padding-left:18px}
+.load{font-size:.9rem;color:var(--muted);margin-top:4px}
+.stars{display:flex;gap:2px}
+.stars button{background:none;border:none;font-size:1.4rem;color:var(--line);padding:0 2px}
+.stars button.on{color:var(--amber)}
+.meta{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:.84rem;margin-top:6px}
+.foot{margin-top:28px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--wick);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+.hidden{display:none!important}
+@media (max-width:520px){.grid{grid-template-columns:1fr}.oilline{grid-template-columns:1fr 72px 36px}header.top h1{font-size:1.6rem}}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Pour Log</h1>
+      <p>Your oils, your candles, and a check so no blend gets made twice.</p>
+    </div>
+    <div class="store" id="storeMode">Saving on <b>this device</b></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tabCandles" aria-selected="true" data-tab="candles">Candles</button>
+    <button role="tab" id="tabOils" aria-selected="false" data-tab="oils">Oils</button>
+  </nav>
+
+  <section id="paneCandles">
+    <div class="bar">
+      <input id="qCandles" type="search" placeholder="Search candles or oils" aria-label="Search candles">
+      <button class="btn primary" id="newCandle">New candle</button>
+    </div>
+    <div class="list" id="candleList"></div>
+  </section>
+
+  <section id="paneOils" class="hidden">
+    <div class="bar">
+      <input id="qOils" type="search" placeholder="Search oils or makers" aria-label="Search oils">
+      <button class="btn primary" id="newOil">Add oil</button>
+    </div>
+    <div class="list" id="oilList"></div>
+  </section>
+
+  <div class="foot">
+    <button class="btn small" id="exportBtn">Export backup</button>
+    <label class="btn small" style="flex-direction:row;color:var(--ink)">Import backup<input type="file" id="importFile" accept=".json,application/json" class="hidden"></label>
+  </div>
+</div>
+
+<dialog id="oilDlg"><form class="sheet" id="oilForm" method="dialog">
+  <h2 id="oilTitle">Add oil</h2>
+  <div class="grid">
+    <label class="full"><span>Oil name</span><input name="name" required placeholder="Lavender Fields"></label>
+    <label class="full"><span>Manufacturer</span><input name="maker" placeholder="Supplier or brand"></label>
+    <label class="full"><span>On hand</span><div class="amt"><input name="qty" type="number" step="any" min="0" inputmode="decimal" placeholder="0"><select name="unit"><option>oz</option><option>g</option><option>lb</option></select></div></label>
+  </div>
+  <details class="more"><summary>Low-stock alert</summary>
+    <label style="margin-top:10px"><span>Remind me to reorder at</span><input name="reorder" type="number" step="any" min="0" inputmode="decimal" placeholder="Same unit as on hand"></label>
+  </details>
+  <div class="actions">
+    <button type="button" class="btn danger" id="oilDelete">Delete</button>
+    <button type="button" class="btn" data-close>Cancel</button>
+    <button type="button" class="btn" id="oilAnother">Save &amp; add another</button>
+    <button type="submit" class="btn primary">Save oil</button>
+  </div>
+</form></dialog>
+
+<dialog id="candleDlg"><form class="sheet" id="candleForm" method="dialog">
+  <h2 id="candleTitle">New candle</h2>
+  <div class="unitrow"><span>Oils</span><div class="seg" id="unitSeg" role="radiogroup" aria-label="Units"><button type="button" data-u="oz">oz</button><button type="button" data-u="g">g</button><button type="button" data-u="lb">lb</button></div></div>
+  <div id="oilLines"></div>
+  <div class="check hidden" id="dupBox" aria-live="polite"></div>
+  <label style="margin-top:12px"><span>Candle name</span><input name="name" required placeholder="Winter Cabin"></label>
+  <details class="more" id="moreDetails">
+    <summary>Wax, wick, notes &amp; rating</summary>
+    <div class="grid" style="margin-top:10px">
+      <label><span>Wax</span><input name="waxType" placeholder="Soy 464"></label>
+      <label><span>Wax amount</span><input name="waxQty" type="number" step="any" min="0" inputmode="decimal"></label>
+      <div class="full load" id="loadLine"></div>
+      <label><span>Wick</span><input name="wick" placeholder="CD 12"></label>
+      <label><span>Vessel</span><input name="vessel" placeholder="8 oz amber jar"></label>
+      <label class="full"><span>Other ingredients</span><input name="other" placeholder="Dye, additives…"></label>
+      <label class="full"><span>Notes</span><textarea name="notes" placeholder="Cure time, hot throw, what to change next time"></textarea></label>
+      <div class="full"><label><span>Rating</span></label><div class="stars" id="stars"></div></div>
+    </div>
+  </details>
+  <datalist id="oilNames"></datalist>
+  <div class="actions">
+    <button type="button" class="btn danger" id="candleDelete">Delete</button>
+    <button type="button" class="btn" data-close>Cancel</button>
+    <button type="submit" class="btn primary" id="candleSave">Save candle</button>
+  </div>
+</form></dialog>
+
+<dialog id="madeDlg"><form class="sheet" method="dialog">
+  <h2>Mark as made</h2>
+  <p id="madeText" style="margin:0 0 8px"></p>
+  <label style="flex-direction:row;align-items:center;gap:8px;color:var(--ink)"><input type="checkbox" id="madeDeduct" style="width:auto" checked> Subtract these oils from inventory</label>
+  <ul id="madeList" style="color:var(--muted);font-size:.9rem"></ul>
+  <div class="actions">
+    <button type="button" class="btn" data-close>Cancel</button>
+    <button type="button" class="btn primary" id="madeConfirm">Log batch</button>
+  </div>
+</form></dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+const G = {g:1, oz:28.349523125, lb:453.59237};
+const toG = (q,u)=> (Number(q)||0)*(G[u]||1);
+const fromG = (g,u)=> g/(G[u]||1);
+const fmt = n => { const r=Math.round(n*100)/100; return (Number.isInteger(r)?r:r.toFixed(2).replace(/0$/,'')); };
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const $ = s => document.querySelector(s);
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+let state = {v:1, oils:[], candles:[]};
+const LS_KEY = 'pourlog.state.v1';
+function loadLocal(){ try{ const s=localStorage.getItem(LS_KEY); if(s){ const d=JSON.parse(s); if(d&&Array.isArray(d.oils)) state=d; } }catch(e){} }
+function saveLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} }
+
+/* ---- optional synced storage (per-person, private) ---- */
+let dbRef=null, writing=false, pending=false;
+async function pushRemote(){
+  if(!dbRef) return;
+  if(writing){ pending=true; return; }
+  writing=true;
+  try{ await dbRef.set(JSON.parse(JSON.stringify(state))); }
+  catch(e){ if(e&&e.code==='unavailable'){ setTimeout(pushRemote, 800+Math.random()*800); } else { dbRef=null; setMode(false); } }
+  writing=false;
+  if(pending){ pending=false; pushRemote(); }
+}
+function setMode(synced){ $('#storeMode').innerHTML = synced ? 'Synced to <b>your account</b>' : 'Saving on <b>this device</b>'; }
+async function initDb(){
+  if(!window.claude||!window.claude.use) return;
+  try{
+    const [db,user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+    if(!db||!user) return;
+    const id = await user.id();
+    if(!id) return;
+    const ref = db.doc('data/users/'+id+'/state');
+    const snap = await ref.get();
+    if(snap.exists){
+      const d = snap.data();
+      if(d&&Array.isArray(d.oils)){ state = JSON.parse(JSON.stringify(d)); saveLocal(); render(); }
+      dbRef = ref; setMode(true);
+    } else {
+      dbRef = ref;
+      try{ await ref.set(JSON.parse(JSON.stringify(state))); setMode(true); }
+      catch(e){ dbRef=null; return; }
+    }
+    ref.onSnapshot(s=>{
+      if(!s.exists||s.metadata.hasPendingWrites||writing) return;
+      const d=s.data(); if(!d||!Array.isArray(d.oils)) return;
+      const incoming=JSON.stringify(d); if(incoming===JSON.stringify(state)) return;
+      state=JSON.parse(incoming); saveLocal(); render();
+    }, ()=>{});
+  }catch(e){ dbRef=null; }
+}
+function commit(){ saveLocal(); pushRemote(); render(); }
+
+/* ---- blend logic ---- */
+const oilById = id => state.oils.find(o=>o.id===id);
+const oilName = (id, fallback) => (oilById(id)?.name) || fallback || 'Removed oil';
+const blendSet = lines => [...new Set(lines.map(l=>l.oilId).filter(Boolean))].sort();
+function blendCheck(ids, excludeId){
+  const exact=[], contains=[], within=[];
+  if(!ids.length) return {exact,contains,within};
+  const key = ids.join('|');
+  for(const c of state.candles){
+    if(c.id===excludeId) continue;
+    const other = blendSet(c.oils);
+    if(!other.length) continue;
+    if(other.join('|')===key){ exact.push(c); continue; }
+    const setA=new Set(ids), setB=new Set(other);
+    if(other.length>=2 && other.every(x=>setA.has(x))) contains.push(c);       // this blend = that blend + more
+    else if(ids.length>=2 && ids.every(x=>setB.has(x))) within.push(c);        // that blend = this blend + more
+  }
+  return {exact,contains,within};
+}
+
+/* ---- rendering ---- */
+function render(){ renderOils(); renderCandles(); }
+function renderOils(){
+  const q = $('#qOils').value.trim().toLowerCase();
+  const list = $('#oilList');
+  const oils = state.oils.filter(o=>!q||(o.name+' '+(o.maker||'')).toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name));
+  if(!state.oils.length){ list.innerHTML = '<div class="empty">No oils yet. Add the ones on your shelf to start building candles.<br><button class="btn primary" data-act="newOil">Add oil</button></div>'; return; }
+  if(!oils.length){ list.innerHTML='<div class="empty">No oils match that search.</div>'; return; }
+  list.innerHTML = oils.map(o=>{
+    const g = toG(o.qty,o.unit);
+    const low = o.reorder>0 && g <= toG(o.reorder,o.reorderUnit||o.unit);
+    const uses = state.candles.filter(c=>c.oils.some(l=>l.oilId===o.id)).length;
+    const alt = o.unit==='g' ? fmt(fromG(g,'oz'))+' oz' : fmt(g)+' g';
+    return `<div class="row"><div class="main"><h3>${esc(o.name)}</h3><div class="sub">${esc(o.maker||'No manufacturer')} · in ${uses} candle${uses===1?'':'s'}</div></div>
+      <div class="qty ${low?'low':''}">${fmt(o.qty||0)} ${o.unit}<small>${low?'Reorder':alt}</small></div>
+      <button class="btn small" data-edit-oil="${o.id}">Edit</button></div>`;
+  }).join('');
+}
+function renderCandles(){
+  const q = $('#qCandles').value.trim().toLowerCase();
+  const list = $('#candleList');
+  if(!state.candles.length){
+    list.innerHTML = '<div class="empty">No candles yet. Type in the oils you used and Pour Log tells you if you\'ve made that blend before. New oils are added to your inventory as you go.<br><button class="btn primary" data-act="newCandle">New candle</button></div>';
+    return;
+  }
+  const cs = state.candles.filter(c=>{
+    if(!q) return true;
+    return (c.name+' '+c.oils.map(l=>oilName(l.oilId,l.name)).join(' ')).toLowerCase().includes(q);
+  }).sort((a,b)=>a.name.localeCompare(b.name));
+  if(!cs.length){ list.innerHTML='<div class="empty">No candles match that search.</div>'; return; }
+  list.innerHTML = cs.map(c=>{
+    const made = (c.made||[]).length;
+    const last = made ? new Date(c.made[made-1]).toLocaleDateString() : null;
+    const dup = blendCheck(blendSet(c.oils), c.id).exact;
+    return `<div class="row"><div class="main"><h3>${esc(c.name)}</h3>
+      <div class="chips">${c.oils.map(l=>`<span class="chip">${esc(oilName(l.oilId,l.name))}${l.qty?` · ${fmt(l.qty)} ${l.unit}`:''}</span>`).join('')||'<span class="sub">No oils</span>'}</div>
+      <div class="meta">${c.rating?`<span>${'★'.repeat(c.rating)}</span>`:''}<span>${made?`Made ${made}× · last ${last}`:'Not made yet'}</span>${dup.length?`<span class="low">Same oils as ${dup.map(d=>esc(d.name)).join(', ')}</span>`:''}</div></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><button class="btn small" data-edit-candle="${c.id}">Edit</button><button class="btn small" data-made="${c.id}">Made one</button></div></div>`;
+  }).join('');
+}
+
+/* ---- tabs ---- */
+function showTab(t){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected', b.dataset.tab===t));
+  $('#paneCandles').classList.toggle('hidden', t!=='candles');
+  $('#paneOils').classList.toggle('hidden', t!=='oils');
+}
+document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+$('#qOils').oninput=renderOils; $('#qCandles').oninput=renderCandles;
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
+
+/* ---- units: one remembered default ---- */
+const prefUnit = () => (state.prefs&&state.prefs.unit) || 'oz';
+function rememberUnit(u){ state.prefs = state.prefs||{}; state.prefs.unit = u; }
+
+/* ---- oil editor ---- */
+let editingOil=null;
+function openOil(id){
+  editingOil = id ? oilById(id) : null;
+  const f=$('#oilForm'); f.reset();
+  $('#oilTitle').textContent = editingOil?'Edit oil':'Add oil';
+  $('#oilDelete').classList.toggle('hidden', !editingOil);
+  f.elements.unit.value = prefUnit();
+  if(editingOil){ f.elements.name.value=editingOil.name; f.elements.maker.value=editingOil.maker||''; f.elements.qty.value=editingOil.qty||''; f.elements.unit.value=editingOil.unit; f.elements.reorder.value=editingOil.reorder||''; }
+  $('#oilDlg').showModal(); f.elements.name.focus();
+}
+function saveOil(keepOpen){
+  const f=$('#oilForm');
+  const name=f.elements.name.value.trim(); if(!name){ f.elements.name.focus(); return; }
+  const clash = state.oils.find(o=>o.name.toLowerCase()===name.toLowerCase() && (o.maker||'').toLowerCase()===f.elements.maker.value.trim().toLowerCase() && o!==editingOil);
+  if(clash && !confirm(`"${clash.name}" from this manufacturer is already in your oils. Add it again anyway?`)) return;
+  const data={name, maker:f.elements.maker.value.trim(), qty:Number(f.elements.qty.value)||0, unit:f.elements.unit.value, reorder:Number(f.elements.reorder.value)||0, reorderUnit:f.elements.unit.value};
+  rememberUnit(f.elements.unit.value);
+  const was=editingOil;
+  if(editingOil) Object.assign(editingOil,data); else state.oils.push({id:uid(),...data});
+  commit(); toast(was?'Oil saved':`${name} added`);
+  if(keepOpen && !was){ const u=f.elements.unit.value, m=f.elements.maker.value; f.reset(); f.elements.unit.value=u; f.elements.maker.value=m; f.elements.name.focus(); }
+  else $('#oilDlg').close();
+}
+$('#oilForm').onsubmit=e=>{ e.preventDefault(); saveOil(false); };
+$('#oilAnother').onclick=()=>saveOil(true);
+$('#oilDelete').onclick=()=>{
+  if(!editingOil) return;
+  const n=state.candles.filter(c=>c.oils.some(l=>l.oilId===editingOil.id)).length;
+  if(!confirm(n?`${editingOil.name} is in ${n} candle${n>1?'s':''}. Those recipes keep its name, but it leaves your inventory. Delete?`:`Delete ${editingOil.name}?`)) return;
+  state.oils=state.oils.filter(o=>o!==editingOil); $('#oilDlg').close(); commit(); toast('Oil deleted');
+};
+
+/* ---- candle editor ---- */
+let editingCandle=null, rating=0, recipeUnit='oz';
+// label shown in the type-ahead: name, plus maker only when two oils share a name
+function oilLabel(o){
+  const twins = state.oils.filter(x=>x.name.toLowerCase()===o.name.toLowerCase()).length>1;
+  return twins && o.maker ? `${o.name} (${o.maker})` : o.name;
+}
+function resolveOil(text){
+  const t=text.trim().toLowerCase(); if(!t) return null;
+  return state.oils.find(o=>oilLabel(o).toLowerCase()===t) || state.oils.find(o=>o.name.toLowerCase()===t) || null;
+}
+function fillDatalist(){ $('#oilNames').innerHTML = state.oils.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(o=>`<option value="${esc(oilLabel(o))}">`).join(''); }
+function setUnit(u){ recipeUnit=u; document.querySelectorAll('#unitSeg button').forEach(b=>b.setAttribute('aria-checked', b.dataset.u===u)); updateLoad(); }
+$('#unitSeg').onclick=e=>{ const u=e.target.dataset.u; if(u) setUnit(u); };
+function addLine(l={}){
+  const d=document.createElement('div'); d.className='oilline';
+  const label = l.oilId && oilById(l.oilId) ? oilLabel(oilById(l.oilId)) : (l.name||'');
+  d.innerHTML=`<input list="oilNames" placeholder="Type or pick an oil" aria-label="Oil" autocomplete="off" value="${esc(label)}"><input type="number" step="any" min="0" inputmode="decimal" placeholder="${recipeUnit}" aria-label="Amount" value="${l.qty||''}"><button type="button" aria-label="Remove oil">✕</button><div class="newtag hidden"></div>`;
+  d.children[2].onclick=()=>{ d.remove(); ensureBlankLine(); liveCheck(); };
+  d.children[0].addEventListener('input',()=>{ ensureBlankLine(); liveCheck(); });
+  d.children[1].addEventListener('input',()=>updateLoad());
+  $('#oilLines').appendChild(d);
+}
+// always keep exactly one empty row at the bottom, so there's no "add" button to find
+function ensureBlankLine(){
+  const rows=[...$('#oilLines').children];
+  const blanks=rows.filter(r=>!r.children[0].value.trim());
+  if(!blanks.length) addLine();
+  else blanks.slice(0,-1).forEach(r=>{ if(r!==document.activeElement?.closest('.oilline')) r.remove(); });
+}
+function readLines(){
+  return [...$('#oilLines').children].map(d=>{
+    const text=d.children[0].value.trim(); if(!text) return null;
+    const o=resolveOil(text);
+    const tag=d.children[3];
+    tag.classList.toggle('hidden', !!o);
+    tag.textContent = o ? '' : `New oil. It'll be added to your inventory when you save.`;
+    return {oilId: o ? o.id : 'new:'+text.toLowerCase(), name: o ? o.name : text, qty:Number(d.children[1].value)||0, unit:recipeUnit};
+  }).filter(Boolean);
+}
+function liveCheck(){
+  const lines=readLines(), ids=blendSet(lines), box=$('#dupBox');
+  const r=blendCheck(ids, editingCandle?.id);
+  const dupPicked = lines.length!==ids.length;
+  if(!ids.length){ box.className='check hidden'; }
+  else if(r.exact.length){
+    box.className='check dup';
+    box.innerHTML=`<strong>You've made this blend before</strong>Same oils as ${r.exact.map(c=>`<b>${esc(c.name)}</b>`).join(', ')}. Amounts may differ, but the oil combination matches.`;
+  } else if(r.contains.length||r.within.length){
+    box.className='check near';
+    box.innerHTML=`<strong>Close to an existing blend</strong><ul>${r.contains.map(c=>`<li>Everything in <b>${esc(c.name)}</b>, plus more</li>`).join('')}${r.within.map(c=>`<li><b>${esc(c.name)}</b> uses all of these, plus more</li>`).join('')}</ul>`;
+  } else {
+    box.className='check ok';
+    box.innerHTML=`<strong>New blend</strong>No other candle uses exactly these ${ids.length} oil${ids.length>1?'s':''}.`;
+  }
+  if(dupPicked) box.innerHTML+='<div style="margin-top:6px">The same oil is listed twice; it counts once.</div>';
+  updateLoad(lines);
+}
+function updateLoad(lines){
+  const f=$('#candleForm'); const wax=toG(f.elements.waxQty.value,recipeUnit);
+  const oil=(lines||readLines()).reduce((s,l)=>s+toG(l.qty,l.unit),0);
+  $('#loadLine').textContent = wax>0&&oil>0 ? `Fragrance load: ${fmt(oil/wax*100)}% of wax weight` : '';
+}
+function drawStars(){
+  $('#stars').innerHTML=[1,2,3,4,5].map(n=>`<button type="button" aria-label="${n} star${n>1?'s':''}" class="${n<=rating?'on':''}" data-star="${n}">★</button>`).join('');
+}
+$('#stars').onclick=e=>{ const n=Number(e.target.dataset.star); if(n){ rating = rating===n?0:n; drawStars(); } };
+function openCandle(id){
+  editingCandle = id ? state.candles.find(c=>c.id===id) : null;
+  const f=$('#candleForm'); f.reset(); $('#oilLines').innerHTML='';
+  $('#candleTitle').textContent = editingCandle?'Edit candle':'New candle';
+  $('#candleDelete').classList.toggle('hidden', !editingCandle);
+  const c=editingCandle||{};
+  recipeUnit = c.oils?.[0]?.unit || c.waxUnit || prefUnit(); setUnit(recipeUnit);
+  fillDatalist();
+  f.elements.name.value=c.name||''; f.elements.waxType.value=c.waxType||'';
+  f.elements.waxQty.value = c.waxQty ? fmt(fromG(toG(c.waxQty, c.waxUnit||recipeUnit), recipeUnit)) : '';
+  f.elements.wick.value=c.wick||''; f.elements.vessel.value=c.vessel||''; f.elements.other.value=c.other||''; f.elements.notes.value=c.notes||'';
+  (c.oils||[]).forEach(l=>addLine({...l, qty: l.qty ? fmt(fromG(toG(l.qty,l.unit),recipeUnit)) : ''}));
+  ensureBlankLine();
+  $('#moreDetails').open = !!(c.waxType||c.waxQty||c.wick||c.vessel||c.other||c.notes||c.rating);
+  rating=c.rating||0; drawStars(); liveCheck();
+  $('#candleDlg').showModal(); $('#oilLines').children[0].children[0].focus();
+}
+$('#candleForm').elements.waxQty.oninput=()=>updateLoad();
+$('#candleForm').onsubmit=e=>{
+  e.preventDefault(); const f=e.target;
+  const name=f.elements.name.value.trim(); if(!name){ f.elements.name.focus(); return; }
+  const lines=readLines();
+  const byId={}; lines.forEach(l=>{ if(byId[l.oilId]) byId[l.oilId].qty += l.qty; else byId[l.oilId]={...l}; });
+  let oils=Object.values(byId);
+  const nameClash=state.candles.find(c=>c.name.toLowerCase()===name.toLowerCase()&&c!==editingCandle);
+  if(nameClash && !confirm(`You already have a candle called "${nameClash.name}". Save another with the same name?`)) return;
+  const r=blendCheck(blendSet(oils), editingCandle?.id);
+  if(r.exact.length && !confirm(`Same oils as ${r.exact.map(c=>c.name).join(', ')}. Save anyway?`)) return;
+  // create any oils typed in for the first time
+  let added=0;
+  oils = oils.map(l=>{
+    if(!l.oilId.startsWith('new:')) return l;
+    const o={id:uid(), name:l.name, maker:'', qty:0, unit:recipeUnit, reorder:0, reorderUnit:recipeUnit};
+    state.oils.push(o); added++; return {...l, oilId:o.id};
+  });
+  rememberUnit(recipeUnit);
+  const data={name, oils, waxType:f.elements.waxType.value.trim(), waxQty:Number(f.elements.waxQty.value)||0, waxUnit:recipeUnit, wick:f.elements.wick.value.trim(), vessel:f.elements.vessel.value.trim(), other:f.elements.other.value.trim(), notes:f.elements.notes.value.trim(), rating};
+  if(editingCandle) Object.assign(editingCandle,data); else state.candles.push({id:uid(), made:[], created:Date.now(), ...data});
+  $('#candleDlg').close(); commit();
+  toast(added ? `Candle saved · ${added} new oil${added>1?'s':''} added` : 'Candle saved');
+};
+$('#candleDelete').onclick=()=>{
+  if(!editingCandle||!confirm(`Delete ${editingCandle.name}?`)) return;
+  state.candles=state.candles.filter(c=>c!==editingCandle); $('#candleDlg').close(); commit(); toast('Candle deleted');
+};
+
+/* ---- made a batch ---- */
+let madeCandle=null;
+function openMade(id){
+  madeCandle=state.candles.find(c=>c.id===id); if(!madeCandle) return;
+  $('#madeText').textContent=`Log a batch of ${madeCandle.name} for today.`;
+  const lines=madeCandle.oils.filter(l=>l.qty>0);
+  $('#madeList').innerHTML = lines.length ? lines.map(l=>{
+    const o=oilById(l.oilId); if(!o) return `<li>${esc(l.name)}: no longer in inventory</li>`;
+    const after=fromG(toG(o.qty,o.unit)-toG(l.qty,l.unit),o.unit);
+    return `<li>${esc(o.name)}: ${fmt(o.qty)} → ${fmt(Math.max(0,after))} ${o.unit}${after<0?' <b class="low">(not enough on hand)</b>':''}</li>`;
+  }).join('') : '<li>No oil amounts in this recipe, so nothing to subtract.</li>';
+  $('#madeDeduct').checked = lines.length>0; $('#madeDeduct').disabled = !lines.length;
+  $('#madeDlg').showModal();
+}
+$('#madeConfirm').onclick=()=>{
+  if(!madeCandle) return;
+  if($('#madeDeduct').checked){
+    madeCandle.oils.forEach(l=>{ const o=oilById(l.oilId); if(o&&l.qty>0){ o.qty = Math.max(0, Math.round(fromG(toG(o.qty,o.unit)-toG(l.qty,l.unit),o.unit)*1000)/1000); } });
+  }
+  (madeCandle.made=madeCandle.made||[]).push(Date.now());
+  $('#madeDlg').close(); commit(); toast('Batch logged');
+};
+
+/* ---- list clicks ---- */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button'); if(!t) return;
+  if(t.dataset.editOil) openOil(t.dataset.editOil);
+  else if(t.dataset.editCandle) openCandle(t.dataset.editCandle);
+  else if(t.dataset.made) openMade(t.dataset.made);
+  else if(t.dataset.act==='newOil'){ showTab('oils'); openOil(); }
+  else if(t.dataset.act==='newCandle') openCandle();
+});
+$('#newOil').onclick=()=>openOil(); $('#newCandle').onclick=()=>openCandle();
+
+/* ---- backup ---- */
+$('#exportBtn').onclick=async()=>{
+  const data=JSON.stringify(state,null,2), name='pour-log-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  try{
+    const dl = window.claude&&window.claude.use ? await window.claude.use('downloads') : null;
+    if(dl){ await dl.save({filename:name, data}); return; }
+  }catch(e){ if(e&&e.code) { toast('Backup not saved'); return; } }
+  if(!(window.claude&&window.claude.use)){
+    try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([data],{type:'application/json'})); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); toast('Backup downloaded'); return; }catch(e){}
+  }
+  try{ await navigator.clipboard.writeText(data); toast('Backup copied to clipboard'); }catch(e){ toast('Export isn\'t available here'); }
+};
+$('#importFile').onchange=e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const d=JSON.parse(rd.result);
+      if(!d||!Array.isArray(d.oils)||!Array.isArray(d.candles)) throw 0;
+      if(!confirm(`Replace your current ${state.oils.length} oils and ${state.candles.length} candles with this backup (${d.oils.length} oils, ${d.candles.length} candles)?`)) return;
+      state=d; commit(); toast('Backup restored');
+    }catch(err){ toast('That file isn\'t a Pour Log backup'); }
+    e.target.value='';
+  };
+  rd.readAsText(file);
+};
+
+let tt; function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),1800); }
+
+loadLocal(); render(); initDb();
+})();
+</script>
+</body>
+</html>
